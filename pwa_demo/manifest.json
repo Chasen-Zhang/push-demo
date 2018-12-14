@@ -1,0 +1,20 @@
+{
+    "name": "一个PWA示例", 
+    "short_name": "PWA示例", 
+    "start_url": "/index.html",
+    "display": "fullscreen",
+    "background_color": "yellow",
+    "theme_color": "#3eaf7c",
+    "icons": [
+      {
+        "src": "./quan.png",
+        "sizes": "120x120",
+        "type": "image/png"
+      }
+    ],
+    "permissions": {
+        "desktop-notification":{}
+    },
+    "scope":"/",
+    "orientation":"portrait"
+  }

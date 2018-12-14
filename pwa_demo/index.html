@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PWA</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="theme-color" content="yellow">
+  <link rel="stylesheet" href="./main.css">
+  <link rel="manifest" href="./manifest.json">
+</head>
+<body>
+  <h3>ddddd</h3>
+  <img src="./quan.png" alt="" style="width:50px;">
+  <button onclick="notifyMe()">2222!</button>
+</body>
+<script>
+// 将base64的applicationServerKey转换成UInt8Array
+function urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+    var base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+    var rawData = window.atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+    for (var i = 0, max = rawData.length; i < max; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+//订阅
+function subscribe(serviceWorkerReg) {
+    serviceWorkerReg.pushManager.subscribe({ // 2. 订阅
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array('<applicationServerKey>')
+    })
+    .then(function (subscription) {
+        // 3. 发送推送订阅对象到服务器，具体实现中发送请求到后端api
+        sendEndpointInSubscription(subscription);
+    })
+    .catch(function () {
+        if (Notification.permission === 'denied') {
+            // 用户拒绝了订阅请求
+        }
+    });
+}
+
+  // 检测浏览器是否支持SW
+  /* if(navigator.serviceWorker != null){
+    navigator.serviceWorker.register('sw.js')
+    .then(function(registartion){
+      console.log('支持sw:',registartion)
+    })
+  } */
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js', {scope: '/'})
+            .then(function (registration) {
+                window.registration = registration;
+                // 注册成功
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function (err) {
+
+                // 注册失败:(
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        
+        //navigator.serviceWorker.ready.then(function(reg) {subscribe(reg)});
+    });
+}
+function notifyMe() {
+  // 先检查浏览器是否支持
+  if (!("Notification" in window)) {
+    alert("This browser does not support desktop notification");
+  }
+
+  // 检查用户是否同意接受通知
+  else if (Notification.permission === "granted") {
+    // If it's okay let's create a notification
+    var notification = new Notification("帅哥！",{
+        dir:'rtl',
+        body:'你的鞋子到了',
+        tag:''
+    });
+  }
+
+  // 否则我们需要向用户获取权限
+  else if (Notification.permission !== 'denied') {
+    Notification.requestPermission(function (permission) {
+      // 如果用户同意，就可以向他们发送通知
+      if (permission === "granted") {
+        //var notification = new Notification("Hi there!");
+      }
+    });
+  }
+
+  
+  // 最后，如果执行到这里，说明用户已经拒绝对相关通知进行授权
+  // 出于尊重，我们不应该再打扰他们了
+}
+</script>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>后台推送</title>
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <script src="js/jquery-3.1.0.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <button class="btn btn-primary"  onclick="testClick()">后台管理页面推送信息</button>
+</div>
+<script>
+
+    //后台管理页面,推送消息；
+    function testClick(){
+        $.ajax({
+            type: 'get',
+            url: 'http://127.0.0.1:8081/notify/all',
+            data: {title: '这是一条推送',message:'333来了',clickTarget:'https://www.jianshu.com/p/474967b872e4',icon:'https://i2.ygimg.cn/cmp/mp/gem/gem_headimg.png'},
+            success: function (response) {
+                console.log('成功推送给前台。' + JSON.stringify(response));
+            },
+            headers: {
+                'auth-secret': "test"
+            },
+            dataType: 'json'
+        });
+    }
+</script>
+</body>
+</html>
