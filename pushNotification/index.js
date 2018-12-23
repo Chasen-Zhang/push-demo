@@ -59,15 +59,25 @@ app.get('/notify/all', function (req, res) {
         
         //载荷 前端弹框的显示相关的信息，传你所传。跟后台管理页面相结合
         let payload = JSON.stringify({message : message, clickTarget: clickTarget, title: title,icon:icon});
-
-        webPush.sendNotification(pushSubscription, payload, {}).then((response) =>{
-            console.log("Status : "+util.inspect(response.statusCode));
-            console.log("Headers : "+JSON.stringify(response.headers));
-            console.log("Body : "+JSON.stringify(response.body));
+        console.log(pushSubscription, '-发送到客户端pushSubscription');
+        webPush.sendNotification(pushSubscription, payload).then((response) => { /* , {} */
+          console.log('成功！');
+          console.log("Status : "+util.inspect(response.statusCode));
+          console.log("Headers : "+JSON.stringify(response.headers));
+          console.log("Body : "+JSON.stringify(response.body));
         }).catch((error) =>{
-            console.log("Status : "+util.inspect(error.statusCode));
-            console.log("Headers : "+JSON.stringify(error.headers));
-            console.log("Body : "+JSON.stringify(error.body));
+          console.log(error,'error');
+          // 判断状态码，440和410表示失效
+          // if (err.statusCode === 410 || err.statusCode === 404) {
+          //   return util.remove(subscription);
+          // } else {
+          //   console.log(subscription);
+          //   console.log(err);
+          // }
+          console.log('失败！');
+          console.log("Status : "+util.inspect(error.statusCode));
+          console.log("Headers : "+JSON.stringify(error.headers));
+          console.log("Body : "+JSON.stringify(error.body));
         });
     });
 
@@ -92,7 +102,7 @@ app.post('/subscribe', function (req, res) {
 
     //存储到内存数组，实际场景中应该是存到数据库。
     subscribers.push(pushSubscription);
-
+    console.log(subscribers, '-----subscribers=--');
     res.send('接受订阅');
 });
 
